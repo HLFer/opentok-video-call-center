@@ -22,21 +22,40 @@
       <ot-publisher :session="session" :opts="publisherOpts" @error="errorEmit" @publisherCreated="handlePublisher"
         class="uk-width-small uk-height-small">
       </ot-publisher>
+
+
       <div v-show="isMuted"
         class="uk-badge uk-label-warning uk-position-top-right uk-margin-small-top uk-margin-small-right">
         Muted
       </div>
+
+      <div v-show="isBlock"
+        class="uk-badge uk-label-warning uk-position-top-right uk-margin-small-top uk-margin-small-right">
+        Camera Blocked
+      </div>
+
     </div>
     <div v-if="otPublisher" class="uk-card-footer">
+
+      <!--Botão mute AudioMic-->
       <button @click="toggleMute" class="uk-button uk-width-1-1 uk-margin-small-bottom"
         :class="[ isMuted ? 'uk-button-primary' : 'uk-button-secondary' ]">
         {{ isMuted ? 'Unmute' : 'Mute'}}
       </button>
+
+      <!--Botão block VideoCall-->
+      <button @click="toggleBlock" class="uk-button uk-width-1-1 uk-margin-small-bottom"
+        :class="[ isBlock ? 'uk-button-primary' : 'uk-button-danger' ]">
+        {{ isBlock ? 'Enable Cam' : 'Block Cam'}}
+      </button>
+
       <button @click="endCall"
         class="uk-button uk-width-1-1 uk-margin-small-bottom uk-button-danger">
         End call
       </button>
     </div>
+
+
   </div>
 </template>
 
@@ -50,7 +69,8 @@ export default {
   data () {
     return {
       otPublisher: null,
-      isMuted: false
+      isMuted: false,
+      isBlock: false
     }
   },
   computed: {
@@ -102,9 +122,19 @@ export default {
         this.isMuted = !this.isMuted
       }
     },
+    toggleBlock: function () {
+      if (this.otPublisher) {
+        this.otPublisher.publishVideo(this.isBlock)
+        this.$emit('publisherBlock', !this.isBlock)
+        this.isBlock = !this.isBlock
+      }
+    },
     endCall: function () {
       this.$emit('endCall')
     }
   }
 }
 </script>
+
+
+      
